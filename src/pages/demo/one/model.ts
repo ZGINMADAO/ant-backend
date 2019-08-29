@@ -15,9 +15,10 @@ export interface ModelType {
     submitRegularForm: Effect;
   };
 }
+
 const Model: ModelType = {
   namespace: 'demoOne',
-  state: {},
+  state: { hello: 'world' },
 
   effects: {
     *submitRegularForm({ payload }, { call }) {
