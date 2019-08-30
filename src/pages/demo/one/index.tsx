@@ -4,6 +4,7 @@ import { connect } from 'dva';
 import { Button, notification, Card } from 'antd';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
+import ImageWrapper from '@/components/ImageWrapperDemo'; // @ 表示相对于源文件根目录
 
 interface Props {
   submitting: boolean;
@@ -60,12 +61,18 @@ class One extends Component<Props, State> {
 
   render() {
     return (
-      <Card title="富文本编辑器">
-        <ReactQuill value={this.state.value} onChange={this.handleChange} />
-        <Button style={{ marginTop: 16 }} onClick={this.prompt}>
-          Prompt
-        </Button>
-      </Card>
+      <>
+        <ImageWrapper
+          src="https://os.alipayobjects.com/rmsportal/mgesTPFxodmIwpi.png"
+          desc="示意图"
+        />
+        <Card title="富文本编辑器">
+          <ReactQuill value={this.state.value} onChange={this.handleChange} />
+          <Button style={{ marginTop: 16 }} onClick={this.prompt}>
+            Prompt
+          </Button>
+        </Card>
+      </>
     );
   }
 
