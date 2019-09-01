@@ -49,4 +49,5 @@ export default {
   'menu.editor.koni': '拓扑编辑器',
   'menu.demo-one': '案例-一',
   'menu.basic-form': '基础表单',
+  'menu.demo-form': '测试表单',
 };

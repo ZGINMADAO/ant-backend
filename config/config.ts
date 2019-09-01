@@ -125,6 +125,11 @@ export default {
               component: './demo/one',
             },
             {
+              name: 'demo-form',
+              path: '/demo/form',
+              component: './demo/form/index.tsx',
+            },
+            {
               component: './404',
             },
           ],
