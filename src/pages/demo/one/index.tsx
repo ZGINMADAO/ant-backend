@@ -72,6 +72,12 @@ class One extends Component<Props, State> {
             Prompt
           </Button>
         </Card>
+        <div>
+          <button onClick={this.hello}>
+            测试{this.props.submitting ? 1 : 0}
+            {this.props.demoOne.hello}
+          </button>
+        </div>
       </>
     );
   }

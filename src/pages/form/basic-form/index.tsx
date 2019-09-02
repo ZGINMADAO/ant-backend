@@ -71,7 +71,10 @@ class BasicForm extends Component<BasicFormProps> {
       <PageHeaderWrapper content={<FormattedMessage id="form-basic-form.basic.description" />}>
         <Card bordered={false}>
           <Form onSubmit={this.handleSubmit} hideRequiredMark style={{ marginTop: 8 }}>
-            <FormItem {...formItemLayout} label={<FormattedMessage id="form-basic-form.title.label" />}>
+            <FormItem
+              {...formItemLayout}
+              label={<FormattedMessage id="form-basic-form.title.label" />}
+            >
               {getFieldDecorator('title', {
                 rules: [
                   {
@@ -79,9 +82,14 @@ class BasicForm extends Component<BasicFormProps> {
                     message: formatMessage({ id: 'form-basic-form.title.required' }),
                   },
                 ],
-              })(<Input placeholder={formatMessage({ id: 'form-basic-form.title.placeholder' })} />)}
+              })(
+                <Input placeholder={formatMessage({ id: 'form-basic-form.title.placeholder' })} />,
+              )}
             </FormItem>
-            <FormItem {...formItemLayout} label={<FormattedMessage id="form-basic-form.date.label" />}>
+            <FormItem
+              {...formItemLayout}
+              label={<FormattedMessage id="form-basic-form.date.label" />}
+            >
               {getFieldDecorator('date', {
                 rules: [
                   {
@@ -99,7 +107,10 @@ class BasicForm extends Component<BasicFormProps> {
                 />,
               )}
             </FormItem>
-            <FormItem {...formItemLayout} label={<FormattedMessage id="form-basic-form.goal.label" />}>
+            <FormItem
+              {...formItemLayout}
+              label={<FormattedMessage id="form-basic-form.goal.label" />}
+            >
               {getFieldDecorator('goal', {
                 rules: [
                   {
@@ -139,12 +150,10 @@ class BasicForm extends Component<BasicFormProps> {
               label={
                 <span>
                   <FormattedMessage id="form-basic-form.client.label" />
-                  <em className={styles.optional}>
-                    <FormattedMessage id="form-basic-form.form.optional" />
-                    <Tooltip title={<FormattedMessage id="form-basic-form.label.tooltip" />}>
-                      <Icon type="info-circle-o" style={{ marginRight: 4 }} />
-                    </Tooltip>
-                  </em>
+                  <FormattedMessage id="form-basic-form.form.optional" />
+                  <Tooltip title={<FormattedMessage id="form-basic-form.label.tooltip" />}>
+                    <Icon type="info-circle-o" style={{ marginRight: 4 }} />
+                  </Tooltip>
                 </span>
               }
             >
@@ -164,7 +173,9 @@ class BasicForm extends Component<BasicFormProps> {
               }
             >
               {getFieldDecorator('invites')(
-                <Input placeholder={formatMessage({ id: 'form-basic-form.invites.placeholder' })} />,
+                <Input
+                  placeholder={formatMessage({ id: 'form-basic-form.invites.placeholder' })}
+                />,
               )}
             </FormItem>
             <FormItem
@@ -211,7 +222,7 @@ class BasicForm extends Component<BasicFormProps> {
                 <FormItem style={{ marginBottom: 0 }}>
                   {getFieldDecorator('publicUsers')(
                     <Select
-                      mode="multiple"
+                      mode="tags"
                       placeholder={formatMessage({ id: 'form-basic-form.publicUsers.placeholder' })}
                       style={{
                         margin: '8px 0',

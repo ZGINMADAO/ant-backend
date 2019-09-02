@@ -50,4 +50,5 @@ export default {
   'menu.demo-one': '案例-一',
   'menu.basic-form': '基础表单',
   'menu.demo-form': '测试表单',
+  'menu.demo-chart': '测试图表',
 };

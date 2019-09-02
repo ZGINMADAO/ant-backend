@@ -130,6 +130,11 @@ export default {
               component: './demo/form/index.tsx',
             },
             {
+              name: 'demo-chart',
+              path: '/demo/chart',
+              component: './demo/chart/index.tsx',
+            },
+            {
               component: './404',
             },
           ],
@@ -167,7 +172,7 @@ export default {
         resourcePath: string;
       },
       _: string,
-      localName: string
+      localName: string,
     ) => {
       if (
         context.resourcePath.includes('node_modules') ||

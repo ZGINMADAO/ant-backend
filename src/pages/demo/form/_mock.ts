@@ -3,6 +3,6 @@ export default {
     setTimeout(() => {
       //延时
       res.send({ message: 'api/demo/form' });
-    }, 1000);
+    }, 2000);
   },
 };
