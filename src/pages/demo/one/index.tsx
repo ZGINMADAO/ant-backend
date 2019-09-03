@@ -1,10 +1,14 @@
 import React, { Component } from 'react';
 import { Dispatch } from 'redux';
 import { connect } from 'dva';
-import { Button, notification, Card } from 'antd';
+import { Button, notification, Card, Alert } from 'antd';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import ImageWrapper from '@/components/ImageWrapperDemo'; // @ 表示相对于源文件根目录
+// import RenderAuthorized from 'ant-design-pro/lib/Authorized';
+
+// const Authorized = RenderAuthorized('user');
+const noMatch = <Alert message="No permission." type="error" showIcon />;
 
 interface Props {
   submitting: boolean;
@@ -62,6 +66,7 @@ class One extends Component<Props, State> {
   render() {
     return (
       <>
+        {/* <Authorized authority={['admin']} noMatch={noMatch}> */}
         <ImageWrapper
           src="https://os.alipayobjects.com/rmsportal/mgesTPFxodmIwpi.png"
           desc="示意图"
@@ -78,6 +83,7 @@ class One extends Component<Props, State> {
             {this.props.demoOne.hello}
           </button>
         </div>
+        {/* </Authorized> */}
       </>
     );
   }
