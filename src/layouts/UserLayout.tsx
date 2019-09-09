@@ -29,6 +29,26 @@ const UserLayout: React.SFC<UserLayoutProps> = props => {
   } = props;
   const { breadcrumb } = getMenuData(routes);
 
+
+  const links = [{
+    key: 'test',
+    title: '链接导航',
+    href: '',
+    blankTarget: true
+  }, {
+    key: 'document',
+    title: '帮助文档',
+    href: '',
+    blankTarget: true
+  }, {
+    key: 'github',
+    title: '问题反馈',
+    href: '',
+    blankTarget: true
+  }];
+
+  const copyright = '@2019';
+
   return (
     <DocumentTitle
       title={getPageTitle({
@@ -47,14 +67,14 @@ const UserLayout: React.SFC<UserLayoutProps> = props => {
             <div className={styles.header}>
               <Link to="/">
                 <img alt="logo" className={styles.logo} src={logo} />
-                <span className={styles.title}>Ant Design</span>
+                <span className={styles.title}>后台管理系统</span>
               </Link>
             </div>
-            <div className={styles.desc}>Ant Design 是西湖区最具影响力的 Web 设计规范</div>
+            <div className={styles.desc}>GGC ADMIN</div>
           </div>
           {children}
         </div>
-        <DefaultFooter />
+        <DefaultFooter links={links} copyright={copyright}/>
       </div>
     </DocumentTitle>
   );

@@ -53,4 +53,19 @@ const request = extend({
   credentials: 'include', // 默认请求是否带上cookie
 });
 
+
+request.interceptors.request.use((url, options) => {
+  options.headers = {
+    ...options.headers,
+    Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+  };
+  return {
+    url: `http://106.13.168.150:9501${url}`,
+    options: {
+      ...options,
+      interceptors: true,
+    },
+  };
+});
+
 export default request;
