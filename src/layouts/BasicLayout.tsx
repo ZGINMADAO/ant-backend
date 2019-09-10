@@ -79,9 +79,9 @@ const BasicLayout: React.FC<BasicLayoutProps> = props => {
 
   useEffect(() => {
     if (dispatch) {
-      dispatch({
-        type: 'user/fetchCurrent',
-      });
+      // dispatch({
+      //   type: 'user/fetchCurrent',
+      // });
       dispatch({
         type: 'settings/getSetting',
       });
@@ -103,14 +103,16 @@ const BasicLayout: React.FC<BasicLayoutProps> = props => {
   return (
     <ProLayout
       logo={logo}
-      onCollapse={handleMenuCollapse}
+      onCollapse={handleMenuCollapse} // 点击收缩菜单
       menuItemRender={(menuItemProps, defaultDom) => {
+        //去掉菜单点不动
         if (menuItemProps.isUrl) {
           return defaultDom;
         }
         return <Link to={menuItemProps.path}>{defaultDom}</Link>;
       }}
       breadcrumbRender={(routers = []) => [
+        //面包屑导航
         {
           path: '/',
           breadcrumbName: formatMessage({
@@ -131,8 +133,8 @@ const BasicLayout: React.FC<BasicLayoutProps> = props => {
       footerRender={footerRender}
       menuDataRender={menuDataRender}
       formatMessage={formatMessage}
-      rightContentRender={rightProps => <RightContent {...rightProps} />}
-      {...props}
+      rightContentRender={rightProps => <RightContent {...rightProps} />} //右上角的导航
+      {...props} //去掉菜单没了
       {...settings}
     >
       {children}

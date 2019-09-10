@@ -8,7 +8,7 @@ export interface LoginParamsType {
 }
 
 export async function fakeAccountLogin(params: LoginParamsType) {
-  return request('/aut/login', {
+  return request('/auth/login', {
     method: 'POST',
     data: params,
   });

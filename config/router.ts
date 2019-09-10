@@ -17,7 +17,7 @@ export default [
       {
         path: '/',
         component: '../layouts/BasicLayout',
-        authority: ['admin', 'user'],
+        // authority: ['admin', 'user'],
         routes: [
           {
             path: '/',
@@ -62,4 +62,4 @@ export default [
   {
     component: './404',
   },
-]
+];

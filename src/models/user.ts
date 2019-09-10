@@ -1,21 +1,22 @@
+import { message } from 'antd';
 import { Effect } from 'dva';
 import { Reducer } from 'redux';
-
 import { queryCurrent, query as queryUsers } from '@/services/user';
+import { User as CurrentUser } from './data';
 
-export interface CurrentUser {
-  avatar?: string;
-  name?: string;
-  title?: string;
-  group?: string;
-  signature?: string;
-  tags?: {
-    key: string;
-    label: string;
-  }[];
-  userid?: string;
-  unreadCount?: number;
-}
+// export interface CurrentUser {
+//   avatar?: string;
+//   name?: string;
+//   title?: string;
+//   group?: string;
+//   signature?: string;
+//   tags?: {
+//     key: string;
+//     label: string;
+//   }[];
+//   userid?: string;
+//   unreadCount?: number;
+// }
 
 export interface UserModelState {
   currentUser?: CurrentUser;
@@ -51,10 +52,14 @@ const UserModel: UserModelType = {
     },
     *fetchCurrent(_, { call, put }) {
       const response = yield call(queryCurrent);
-      yield put({
-        type: 'saveCurrentUser',
-        payload: response,
-      });
+      if (response.status === 'ok') {
+        yield put({
+          type: 'saveCurrentUser',
+          payload: response.data,
+        });
+      } else {
+        message.error(response.message, 3);
+      }
     },
   },
 
@@ -75,8 +80,8 @@ const UserModel: UserModelType = {
         ...state,
         currentUser: {
           ...state.currentUser,
-          notifyCount: action.payload.totalCount,
-          unreadCount: action.payload.unreadCount,
+          // notifyCount: action.payload.totalCount,
+          // unreadCount: action.payload.unreadCount,
         },
       };
     },

@@ -114,8 +114,8 @@ class Login extends Component<LoginProps, LoginState> {
                 formatMessage({ id: 'user-login.login.message-invalid-credentials' }),
               )}
             <UserName
-              name="userName"
-              placeholder={`${formatMessage({ id: 'user-login.login.userName' })}: admin or user`}
+              name="username"
+              placeholder={`${formatMessage({ id: 'user-login.login.userName' })}`}
               rules={[
                 {
                   required: true,
@@ -125,7 +125,7 @@ class Login extends Component<LoginProps, LoginState> {
             />
             <Password
               name="password"
-              placeholder={`${formatMessage({ id: 'user-login.login.password' })}: ant.design`}
+              placeholder={`${formatMessage({ id: 'user-login.login.password' })}`}
               rules={[
                 {
                   required: true,
@@ -181,7 +181,7 @@ class Login extends Component<LoginProps, LoginState> {
               <FormattedMessage id="user-login.login.remember-me" />
             </Checkbox>
             <a style={{ float: 'right' }} href="">
-              <FormattedMessage id="user-login.login.forgot-password" />
+              忘记密码
             </a>
           </div>
           <Submit loading={submitting}>

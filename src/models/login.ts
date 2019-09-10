@@ -4,7 +4,7 @@ import { Effect } from 'dva';
 import { stringify } from 'querystring';
 
 import { fakeAccountLogin, getFakeCaptcha } from '@/services/login';
-import { setAuthority } from '@/utils/authority';
+// import { setAuthority } from '@/utils/authority';
 import { getPageQuery } from '@/utils/utils';
 
 export interface StateType {
@@ -31,6 +31,7 @@ const Model: LoginModelType = {
 
   state: {
     status: undefined,
+    type: 'account',
   },
 
   effects: {
@@ -42,6 +43,7 @@ const Model: LoginModelType = {
       });
       // Login successfully
       if (response.status === 'ok') {
+        sessionStorage.setItem('token', response.token);
         const urlParams = new URL(window.location.href);
         const params = getPageQuery();
         let { redirect } = params as { redirect: string };
@@ -66,6 +68,15 @@ const Model: LoginModelType = {
     },
     *logout(_, { put }) {
       const { redirect } = getPageQuery();
+      // @ts-ignore https://umijs.org/zh/guide/with-dva.html#faq
+      window.g_app._store.dispatch({
+        //事实上在SecurityLayout  每次加载的时候都会执行此操作
+        type: 'user/saveCurrentUser',
+        payload: [],
+      });
+
+      sessionStorage.removeItem('token');
+
       // redirect
       if (window.location.pathname !== '/user/login' && !redirect) {
         yield put(
@@ -82,11 +93,14 @@ const Model: LoginModelType = {
 
   reducers: {
     changeLoginStatus(state, { payload }) {
-      setAuthority(payload.currentAuthority);
+      // setAuthority(payload.currentAuthority);
+      console.log('changeLoginStatus');
+      console.log(state);
+      console.log(payload);
       return {
         ...state,
         status: payload.status,
-        type: payload.type,
+        // type: payload.type,
       };
     },
   },

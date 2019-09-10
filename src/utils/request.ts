@@ -50,17 +50,24 @@ const errorHandler = (error: { response: Response }): Response => {
  */
 const request = extend({
   errorHandler, // 默认错误处理
-  credentials: 'include', // 默认请求是否带上cookie
+  // credentials: 'include',
+  /*
+  默认请求是否带上cookie如果要发送Cookie，Access-Control-Allow-Origin就不能设为星号，必须指定明确
+  的、与请求网页一致的域名。同时，Cookie依然遵循同源政策，只有用服务器域名设置的Cookie才会上传，其他
+  域名的Cookie并不会上传，且（跨源）原网页代码中的document.cookie也无法读取服务器域名下的Cookie。
+  */
+  prefix: 'http://106.13.168.150:9501',
+  // prefix: 'http://admin.yinqingli.com',
 });
-
 
 request.interceptors.request.use((url, options) => {
   options.headers = {
     ...options.headers,
-    Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+    // Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+    Authorization: `${sessionStorage.getItem('token')}`,
   };
   return {
-    url: `http://106.13.168.150:9501${url}`,
+    url: `${url}`,
     options: {
       ...options,
       interceptors: true,

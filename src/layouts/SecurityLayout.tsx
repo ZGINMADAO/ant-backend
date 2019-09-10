@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'dva';
 import { Redirect } from 'umi';
 import { ConnectState, ConnectProps } from '@/models/connect';
-import { CurrentUser } from '@/models/user';
+import { User as CurrentUser } from '@/models/data';
 import PageLoading from '@/components/PageLoading';
 
 interface SecurityLayoutProps extends ConnectProps {
@@ -34,10 +34,12 @@ class SecurityLayout extends React.Component<SecurityLayoutProps, SecurityLayout
   render() {
     const { isReady } = this.state;
     const { children, loading, currentUser } = this.props;
-    if ((!currentUser.userid && loading) || !isReady) {
+    if ((!currentUser.id && loading) || !isReady) {
+      //如果用户信息不存在以及正在请求  或  页面第一次加载 则显示加载框
       return <PageLoading />;
     }
-    if (!currentUser.userid) {
+    if (!currentUser.id) {
+      //如果用户信息不存在则跳转到登录
       return <Redirect to="/user/login"></Redirect>;
     }
     return children;
