@@ -8,6 +8,7 @@ import ProLayout, {
   MenuDataItem,
   BasicLayoutProps as ProLayoutProps,
   Settings,
+  DefaultFooter
 } from '@ant-design/pro-layout';
 import React, { useEffect, useState } from 'react';
 import Link from 'umi/link';
@@ -18,7 +19,7 @@ import { formatMessage } from 'umi-plugin-react/locale';
 import Authorized from '@/utils/Authorized';
 import RightContent from '@/components/GlobalHeader/RightContent';
 import { ConnectState } from '@/models/connect';
-import { isAntDesignPro } from '@/utils/utils';
+// import { isAntDesignPro } from '@/utils/utils';
 import logo from '../assets/logo.svg';
 
 export interface BasicLayoutProps extends ProLayoutProps {
@@ -46,30 +47,58 @@ const menuDataRender = (menuList: MenuDataItem[]): MenuDataItem[] =>
     return Authorized.check(item.authority, localItem, null) as MenuDataItem;
   });
 
-const footerRender: BasicLayoutProps['footerRender'] = (_, defaultDom) => {
-  if (!isAntDesignPro()) {
-    return defaultDom;
-  }
+// const footerRender: BasicLayoutProps['footerRender'] = (_, defaultDom) => {
+//   if (!isAntDesignPro()) {
+//     return defaultDom;
+//   }
+//   return (
+//     <>
+//       {defaultDom}
+//       <div
+//         style={{
+//           padding: '0px 24px 24px',
+//           textAlign: 'center',
+//         }}
+//       >
+//         <a href="https://www.netlify.com" target="_blank" rel="noopener noreferrer">
+//           <img
+//             src="https://www.netlify.com/img/global/badges/netlify-color-bg.svg"
+//             width="82px"
+//             alt="netlify logo"
+//           />
+//         </a>
+//       </div>
+//     </>
+//   );
+// };
+
+
+
+const links = [{
+  key: 'FullStack',
+  title: 'MADAO',
+  href: '',
+  blankTarget: true
+}, {
+  key: 'Document',
+  title: '帮助文档',
+  href: '',
+  blankTarget: true
+}, {
+  key: 'Github',
+  title: '问题反馈',
+  href: '',
+  blankTarget: true
+}];
+
+const copyright = '@2019';
+
+const footerRenderCustom: BasicLayoutProps['footerRender'] = (_, defaultDom) => {
   return (
-    <>
-      {defaultDom}
-      <div
-        style={{
-          padding: '0px 24px 24px',
-          textAlign: 'center',
-        }}
-      >
-        <a href="https://www.netlify.com" target="_blank" rel="noopener noreferrer">
-          <img
-            src="https://www.netlify.com/img/global/badges/netlify-color-bg.svg"
-            width="82px"
-            alt="netlify logo"
-          />
-        </a>
-      </div>
-    </>
+    <DefaultFooter links={links} copyright={copyright} />
   );
 };
+
 
 const BasicLayout: React.FC<BasicLayoutProps> = props => {
   const [menuData, setMenuData] = useState([]);
@@ -120,8 +149,7 @@ const BasicLayout: React.FC<BasicLayoutProps> = props => {
         }
         return <Link to={menuItemProps.path}>{defaultDom}</Link>;
       }}
-      breadcrumbRender={(routers = []) => [
-        //面包屑导航
+      breadcrumbRender={(routers = []) => [     //面包屑导航
         {
           path: '/',
           breadcrumbName: formatMessage({
@@ -139,7 +167,7 @@ const BasicLayout: React.FC<BasicLayoutProps> = props => {
           <span>{route.breadcrumbName}</span>
         );
       }}
-      footerRender={footerRender}
+      footerRender={footerRenderCustom}
       // menuDataRender={menuDataRender}
       menuDataRender={() => menuData}
       formatMessage={formatMessage}

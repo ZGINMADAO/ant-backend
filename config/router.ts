@@ -24,6 +24,19 @@ export default [
             redirect: '/welcome',
           },
           {
+            path: '/articles/list',
+            name: 'articles-list',
+            icon: 'smile',
+            component: './articles/list',
+          },
+          {
+            path: '/articles/publish',
+            name: 'articles-publish',
+            icon: 'smile',
+            component: './articles/publish/index.tsx',
+          },
+
+          {
             path: '/welcome',
             name: 'welcome',
             icon: 'smile',

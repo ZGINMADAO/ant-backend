@@ -4,7 +4,7 @@ import { connect } from 'dva';
 import { Button, notification, Card, Alert } from 'antd';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
-import ImageWrapper from '@/components/ImageWrapperDemo'; // @ 表示相对于源文件根目录
+// import ImageWrapper from '@/components/ImageWrapperDemo'; // @ 表示相对于源文件根目录
 // import RenderAuthorized from 'ant-design-pro/lib/Authorized';
 import RenderAuthorized from '@/components/Authorized';
 
@@ -68,10 +68,10 @@ class One extends Component<Props, State> {
     return (
       <>
         <Authorized authority={['admin']} noMatch={noMatch}>
-          <ImageWrapper
-            src="https://os.alipayobjects.com/rmsportal/mgesTPFxodmIwpi.png"
-            desc="示意图"
-          />
+          {/*<ImageWrapper*/}
+          {/*  src="https://os.alipayobjects.com/rmsportal/mgesTPFxodmIwpi.png"*/}
+          {/*  desc="示意图"*/}
+          {/*/>*/}
           <Card title="富文本编辑器">
             <ReactQuill value={this.state.value} onChange={this.handleChange} />
             <Button style={{ marginTop: 16 }} onClick={this.prompt}>
