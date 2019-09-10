@@ -9,7 +9,7 @@ import ProLayout, {
   BasicLayoutProps as ProLayoutProps,
   Settings,
 } from '@ant-design/pro-layout';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'umi/link';
 import { Dispatch } from 'redux';
 import { connect } from 'dva';
@@ -72,6 +72,8 @@ const footerRender: BasicLayoutProps['footerRender'] = (_, defaultDom) => {
 };
 
 const BasicLayout: React.FC<BasicLayoutProps> = props => {
+  const [menuData, setMenuData] = useState([]);
+
   const { dispatch, children, settings } = props;
   /**
    * constructor
@@ -84,6 +86,13 @@ const BasicLayout: React.FC<BasicLayoutProps> = props => {
       // });
       dispatch({
         type: 'settings/getSetting',
+      });
+      dispatch({
+        type: 'user/getMenuData', // 获取菜单
+        callback: (res: any) => {
+          console.log('user/getMenuData callback');
+          setMenuData(res.data);
+        },
       });
     }
   }, []);
@@ -131,7 +140,8 @@ const BasicLayout: React.FC<BasicLayoutProps> = props => {
         );
       }}
       footerRender={footerRender}
-      menuDataRender={menuDataRender}
+      // menuDataRender={menuDataRender}
+      menuDataRender={() => menuData}
       formatMessage={formatMessage}
       rightContentRender={rightProps => <RightContent {...rightProps} />} //右上角的导航
       {...props} //去掉菜单没了

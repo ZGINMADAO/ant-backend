@@ -1,7 +1,7 @@
 import { message } from 'antd';
 import { Effect } from 'dva';
 import { Reducer } from 'redux';
-import { queryCurrent, query as queryUsers } from '@/services/user';
+import { queryCurrent, query as queryUsers, getAccountMenus } from '@/services/user';
 import { User as CurrentUser } from './data';
 
 // export interface CurrentUser {
@@ -28,10 +28,12 @@ export interface UserModelType {
   effects: {
     fetch: Effect;
     fetchCurrent: Effect;
+    getMenuData: Effect;
   };
   reducers: {
     saveCurrentUser: Reducer<UserModelState>;
     changeNotifyCount: Reducer<UserModelState>;
+    // saveMenu:Reducer<UserModelState>;
   };
 }
 
@@ -61,6 +63,19 @@ const UserModel: UserModelType = {
         message.error(response.message, 3);
       }
     },
+    *getMenuData({ payload, callback }, { put, call }) {
+      const response = yield call(getAccountMenus);
+      // if (response.status === 'ok') {
+      //   const menuData = response.data;
+      //   yield put({
+      //     type: 'saveMenu',
+      //     payload: { menuData: menuData },
+      //   });
+      // }
+      if (callback && typeof callback === 'function') {
+        callback(response); // 返回结果
+      }
+    },
   },
 
   reducers: {
@@ -70,6 +85,14 @@ const UserModel: UserModelType = {
         currentUser: action.payload || {},
       };
     },
+    // saveMenu(state, action) {
+    //   console.log('saveMenu');
+    //   console.log(state);
+    //   return {
+    //     ...state,
+    //     ...action.payload,
+    //   };
+    // },
     changeNotifyCount(
       state = {
         currentUser: {},

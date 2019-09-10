@@ -11,3 +11,8 @@ export async function queryCurrent(): Promise<any> {
 export async function queryNotices(): Promise<any> {
   return request('/api/notices');
 }
+
+// 获取权限菜单
+export async function getAccountMenus() {
+  return request('/auth/menus');
+}
