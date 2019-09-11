@@ -1,6 +1,6 @@
 import { Alert, Table } from 'antd';
 import { ColumnProps, TableRowSelection, TableProps } from 'antd/es/table';
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 
 import { TableListItem } from '../../data.d';
 import styles from './index.less';
@@ -41,29 +41,33 @@ interface StandardTableState {
 }
 
 class StandardTable extends Component<StandardTableProps<TableListItem>, StandardTableState> {
-  static getDerivedStateFromProps(nextProps: StandardTableProps<TableListItem>) {
-    // clean state
-    if (nextProps.selectedRows.length === 0) {
-      const needTotalList = initTotalList(nextProps.columns);
-      return {
-        selectedRowKeys: [],
-        needTotalList,
-      };
-    }
-    return null;
-  }
+  //因为不知道有啥用 所以注释了
+  // static getDerivedStateFromProps(nextProps: StandardTableProps<TableListItem>) {
+  //   // clean state
+  //   if (nextProps.selectedRows.length === 0) {
+  //     const needTotalList = initTotalList(nextProps.columns);
+  //     return {
+  //       selectedRowKeys: [],
+  //       needTotalList,
+  //     };
+  //   }
+  //   return null;
+  // }
 
   constructor(props: StandardTableProps<TableListItem>) {
     super(props);
     const { columns } = props;
+    console.log('initTotalList');
+    console.log(columns);
     const needTotalList = initTotalList(columns);
+    console.log(needTotalList);
 
     this.state = {
       selectedRowKeys: [],
       needTotalList,
     };
   }
-
+  //checkbox选中行时计算（包括needTotal总数）
   handleRowSelectChange: TableRowSelection<TableListItem>['onChange'] = (
     selectedRowKeys,
     selectedRows: TableListItem[],
@@ -126,8 +130,10 @@ class StandardTable extends Component<StandardTableProps<TableListItem>, Standar
         <div className={styles.tableAlert}>
           <Alert
             message={
-              <Fragment>
+              <>
                 已选择 <a style={{ fontWeight: 600 }}>{selectedRowKeys.length}</a> 项&nbsp;&nbsp;
+                {console.log('needTotalList')}
+                {console.log(needTotalList)}
                 {needTotalList.map((item, index) => (
                   <span style={{ marginLeft: 8 }} key={item.dataIndex}>
                     {item.title}
@@ -136,13 +142,18 @@ class StandardTable extends Component<StandardTableProps<TableListItem>, Standar
                       {item.render
                         ? item.render(item.total, item as TableListItem, index)
                         : item.total}
+                      {/*下面两个都可以*/}
+                      {/*{*/}
+                      {/*item.render(item.total, item as TableListItem, index)+'hello'*/}
+                      {/*}*/}
+                      {/*{item.total}*/}
                     </span>
                   </span>
                 ))}
                 <a onClick={this.cleanSelectedKeys} style={{ marginLeft: 24 }}>
                   清空
                 </a>
-              </Fragment>
+              </>
             }
             type="info"
             showIcon

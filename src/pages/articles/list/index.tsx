@@ -28,6 +28,7 @@ import CreateForm from './components/CreateForm';
 import StandardTable, { StandardTableColumnProps } from './components/StandardTable';
 import UpdateForm, { FormValsType } from './components/UpdateForm';
 import { TableListItem, TableListPagination, TableListParams } from './data.d';
+import MoreBtn from './components/MoreBtn';
 
 import styles from './style.less';
 
@@ -38,16 +39,18 @@ const getValue = (obj: { [x: string]: string[] }) =>
     .map(key => obj[key])
     .join(',');
 
-type IStatusMapType = 'default' | 'processing' | 'success' | 'error';
-const statusMap = ['default', 'processing', 'success', 'error'];
-const status = ['关闭', '运行中', '已上线', '异常'];
+type IStatusMapType = 'error' | 'success';
+const statusMap = ['error', 'success'];
+const status = ['禁用', '启用'];
 
+//组件props
 interface TableListProps extends FormComponentProps {
   dispatch: Dispatch<any>;
   loading: boolean;
-  listTableList: StateType;
+  articleTableList: StateType;
 }
 
+//当前组件内部state
 interface TableListState {
   modalVisible: boolean;
   updateModalVisible: boolean;
@@ -59,18 +62,18 @@ interface TableListState {
 
 @connect(
   ({
-    listTableList,
+    articleTableList,
     loading,
   }: {
-    listTableList: StateType;
+    articleTableList: StateType;
     loading: {
       models: {
         [key: string]: boolean;
       };
     };
   }) => ({
-    listTableList,
-    loading: loading.models.listTableList,
+    articleTableList,
+    loading: loading.models.articleTableList,
   }),
 )
 class TableList extends Component<TableListProps, TableListState> {
@@ -78,9 +81,9 @@ class TableList extends Component<TableListProps, TableListState> {
     modalVisible: false,
     updateModalVisible: false,
     expandForm: false,
-    selectedRows: [],
+    selectedRows: [], //选中的checkbox
     formValues: {},
-    stepFormValues: {},
+    stepFormValues: {}, //操作中的这行记录
   };
 
   columns: StandardTableColumnProps[] = [
@@ -89,37 +92,47 @@ class TableList extends Component<TableListProps, TableListState> {
       dataIndex: 'title',
     },
     {
-      title: '内容',
-      dataIndex: 'content',
+      title: '作者',
+      dataIndex: 'author_name',
+    },
+    {
+      title: '分类',
+      dataIndex: 'category_name',
+    },
+    {
+      title: '标签',
+      dataIndex: 'labels',
     },
     {
       title: '已读次数',
       dataIndex: 'read_count',
       sorter: true,
-      align: 'right',
-      render: (val: string) => `${val} 万`,
+      align: 'center',
+      render: (val: string) => `${val} 次`,
       // mark to display a total number
       needTotal: true,
     },
+    {
+      title: '评论数量',
+      dataIndex: 'comment_count',
+      sorter: true,
+      align: 'center',
+      render: (val: string) => `${val} 个`,
+      // mark to display a total number
+      needTotal: true,
+    },
+
     {
       title: '状态',
       dataIndex: 'status',
       filters: [
         {
-          text: status[0],
+          text: status[0], //禁用
           value: '0',
         },
         {
-          text: status[1],
+          text: status[1], //启用
           value: '1',
-        },
-        {
-          text: status[2],
-          value: '2',
-        },
-        {
-          text: status[3],
-          value: '3',
         },
       ],
       render(val: IStatusMapType) {
@@ -127,7 +140,7 @@ class TableList extends Component<TableListProps, TableListState> {
       },
     },
     {
-      title: '上次调度时间',
+      title: '发布时间',
       dataIndex: 'updatedAt',
       sorter: true,
       render: (val: string) => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>,
@@ -136,9 +149,13 @@ class TableList extends Component<TableListProps, TableListState> {
       title: '操作',
       render: (text, record) => (
         <Fragment>
-          <a onClick={() => this.handleUpdateModalVisible(true, record)}>配置</a>
+          <a href="">编辑</a>
           <Divider type="vertical" />
-          <a href="">订阅警报</a>
+          <MoreBtn key="more" item={record} />
+          {/*<Divider type="vertical"/>*/}
+          {/*<a onClick={() => this.handleUpdateModalVisible(true, record)}>配置</a>*/}
+          {/*<Divider type="vertical"/>*/}
+          {/*<a href="">订阅警报</a>*/}
         </Fragment>
       ),
     },
@@ -147,10 +164,11 @@ class TableList extends Component<TableListProps, TableListState> {
   componentDidMount() {
     const { dispatch } = this.props;
     dispatch({
-      type: 'listTableList/fetch',
+      type: 'articleTableList/fetch',
     });
   }
 
+  //分页、排序、筛选变化时触发
   handleStandardTableChange = (
     pagination: Partial<TableListPagination>,
     filtersArg: Record<keyof TableListItem, string[]>,
@@ -176,7 +194,7 @@ class TableList extends Component<TableListProps, TableListState> {
     }
 
     dispatch({
-      type: 'listTableList/fetch',
+      type: 'articleTableList/fetch',
       payload: params,
     });
   };
@@ -188,18 +206,18 @@ class TableList extends Component<TableListProps, TableListState> {
       formValues: {},
     });
     dispatch({
-      type: 'listTableList/fetch',
+      type: 'articleTableList/fetch',
       payload: {},
     });
   };
-
+  //展开 收起搜索表单
   toggleForm = () => {
     const { expandForm } = this.state;
     this.setState({
       expandForm: !expandForm,
     });
   };
-
+  //点击checkbox 出现的更多操作 中的操作
   handleMenuClick = (e: { key: string }) => {
     const { dispatch } = this.props;
     const { selectedRows } = this.state;
@@ -208,7 +226,7 @@ class TableList extends Component<TableListProps, TableListState> {
     switch (e.key) {
       case 'remove':
         dispatch({
-          type: 'listTableList/remove',
+          type: 'articleTableList/remove',
           payload: {
             key: selectedRows.map(row => row.key),
           },
@@ -223,14 +241,16 @@ class TableList extends Component<TableListProps, TableListState> {
         break;
     }
   };
-
+  //点击列表checkbox事件
   handleSelectRows = (rows: TableListItem[]) => {
+    console.log('handleSelectRows');
     this.setState({
       selectedRows: rows,
     });
   };
-
+  //点击表单查询事件
   handleSearch = (e: React.FormEvent) => {
+    console.log('handleSearch');
     e.preventDefault();
 
     const { dispatch, form } = this.props;
@@ -248,29 +268,32 @@ class TableList extends Component<TableListProps, TableListState> {
       });
 
       dispatch({
-        type: 'listTableList/fetch',
+        type: 'articleTableList/fetch',
         payload: values,
       });
     });
   };
-
+  //设置规则模态框隐藏展示
   handleModalVisible = (flag?: boolean) => {
     this.setState({
       modalVisible: !!flag,
     });
   };
-
+  //规则配置模态框
   handleUpdateModalVisible = (flag?: boolean, record?: FormValsType) => {
+    console.log('record');
+    console.log(record);
     this.setState({
       updateModalVisible: !!flag,
       stepFormValues: record || {},
     });
   };
-
+  //新建规则 然后点击确定事件
   handleAdd = (fields: { desc: any }) => {
+    console.log('handleAdd');
     const { dispatch } = this.props;
     dispatch({
-      type: 'listTableList/add',
+      type: 'articleTableList/add',
       payload: {
         desc: fields.desc,
       },
@@ -279,11 +302,11 @@ class TableList extends Component<TableListProps, TableListState> {
     message.success('添加成功');
     this.handleModalVisible();
   };
-
+  //规则配置最后一步完成操作
   handleUpdate = (fields: FormValsType) => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'listTableList/update',
+      type: 'articleTableList/update',
       payload: {
         name: fields.name,
         desc: fields.desc,
@@ -295,6 +318,7 @@ class TableList extends Component<TableListProps, TableListState> {
     this.handleUpdateModalVisible();
   };
 
+  // 查询表单收起时的样子
   renderSimpleForm() {
     const { form } = this.props;
     const { getFieldDecorator } = form;
@@ -334,6 +358,7 @@ class TableList extends Component<TableListProps, TableListState> {
     );
   }
 
+  // 查询表单展开时的样子
   renderAdvancedForm() {
     const {
       form: { getFieldDecorator },
@@ -408,6 +433,7 @@ class TableList extends Component<TableListProps, TableListState> {
     );
   }
 
+  //查询表单渲染 看是否折叠渲染不同的 表单
   renderForm() {
     const { expandForm } = this.state;
     return expandForm ? this.renderAdvancedForm() : this.renderSimpleForm();
@@ -415,7 +441,7 @@ class TableList extends Component<TableListProps, TableListState> {
 
   render() {
     const {
-      listTableList: { data },
+      articleTableList: { data }, //从articleTableList解构data
       loading,
     } = this.props;
 
@@ -441,9 +467,9 @@ class TableList extends Component<TableListProps, TableListState> {
           <div className={styles.tableList}>
             <div className={styles.tableListForm}>{this.renderForm()}</div>
             <div className={styles.tableListOperator}>
-              {/*<Button icon="plus" type="primary" onClick={() => this.handleModalVisible(true)}>*/}
-              {/*  新建*/}
-              {/*</Button>*/}
+              <Button icon="plus" type="primary" onClick={() => this.handleModalVisible(true)}>
+                新建
+              </Button>
               {selectedRows.length > 0 && (
                 <span>
                   <Button>批量操作</Button>
@@ -462,18 +488,17 @@ class TableList extends Component<TableListProps, TableListState> {
               columns={this.columns}
               onSelectRow={this.handleSelectRows}
               onChange={this.handleStandardTableChange}
-              rowKey='id'
+              rowKey="id"
             />
           </div>
         </Card>
+        {/*新建规则模态框*/}
         <CreateForm {...parentMethods} modalVisible={modalVisible} />
-        {stepFormValues && Object.keys(stepFormValues).length ? (
-          <UpdateForm
-            {...updateMethods}
-            updateModalVisible={updateModalVisible}
-            values={stepFormValues}
-          />
-        ) : null}
+        <UpdateForm // 规则配置模态框
+          {...updateMethods}
+          updateModalVisible={updateModalVisible}
+          values={stepFormValues}
+        />
       </PageHeaderWrapper>
     );
   }
