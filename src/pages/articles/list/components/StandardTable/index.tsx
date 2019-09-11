@@ -132,11 +132,12 @@ class StandardTable extends Component<StandardTableProps<TableListItem>, Standar
             message={
               <>
                 已选择 <a style={{ fontWeight: 600 }}>{selectedRowKeys.length}</a> 项&nbsp;&nbsp;
-                {console.log('needTotalList')}
-                {console.log(needTotalList)}
+                {/*{console.log('needTotalList')}*/}
+                {/*{console.log(needTotalList)}*/}
                 {needTotalList.map((item, index) => (
                   <span style={{ marginLeft: 8 }} key={item.dataIndex}>
                     {item.title}
+                    {console.log(item as TableListItem)}
                     总计&nbsp;
                     <span style={{ fontWeight: 600 }}>
                       {item.render
@@ -144,7 +145,7 @@ class StandardTable extends Component<StandardTableProps<TableListItem>, Standar
                         : item.total}
                       {/*下面两个都可以*/}
                       {/*{*/}
-                      {/*item.render(item.total, item as TableListItem, index)+'hello'*/}
+                      {/*{item.render(item.total, item as TableListItem, index)}*/}
                       {/*}*/}
                       {/*{item.total}*/}
                     </span>

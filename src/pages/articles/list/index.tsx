@@ -14,26 +14,27 @@ import {
   Row,
   Select,
   message,
+  Modal
 } from 'antd';
-import React, { Component, Fragment } from 'react';
+import React, {Component, Fragment} from 'react';
 
-import { Dispatch } from 'redux';
-import { FormComponentProps } from 'antd/es/form';
-import { PageHeaderWrapper } from '@ant-design/pro-layout';
-import { SorterResult } from 'antd/es/table';
-import { connect } from 'dva';
+import {Dispatch} from 'redux';
+import {FormComponentProps} from 'antd/es/form';
+import {PageHeaderWrapper} from '@ant-design/pro-layout';
+import {SorterResult} from 'antd/es/table';
+import {connect} from 'dva';
 import moment from 'moment';
-import { StateType } from './model';
+import {StateType} from './model';
 import CreateForm from './components/CreateForm';
-import StandardTable, { StandardTableColumnProps } from './components/StandardTable';
-import UpdateForm, { FormValsType } from './components/UpdateForm';
-import { TableListItem, TableListPagination, TableListParams } from './data.d';
+import StandardTable, {StandardTableColumnProps} from './components/StandardTable';
+import UpdateForm, {FormValsType} from './components/UpdateForm';
+import {TableListItem, TableListPagination, TableListParams} from './data.d';
 import MoreBtn from './components/MoreBtn';
 
 import styles from './style.less';
 
 const FormItem = Form.Item;
-const { Option } = Select;
+const {Option} = Select;
 const getValue = (obj: { [x: string]: string[] }) =>
   Object.keys(obj)
     .map(key => obj[key])
@@ -62,9 +63,9 @@ interface TableListState {
 
 @connect(
   ({
-    articleTableList,
-    loading,
-  }: {
+     articleTableList,
+     loading,
+   }: {
     articleTableList: StateType;
     loading: {
       models: {
@@ -136,7 +137,7 @@ class TableList extends Component<TableListProps, TableListState> {
         },
       ],
       render(val: IStatusMapType) {
-        return <Badge status={statusMap[val]} text={status[val]} />;
+        return <Badge status={statusMap[val]} text={status[val]}/>;
       },
     },
     {
@@ -150,8 +151,8 @@ class TableList extends Component<TableListProps, TableListState> {
       render: (text, record) => (
         <Fragment>
           <a href="">编辑</a>
-          <Divider type="vertical" />
-          <MoreBtn key="more" item={record} />
+          <Divider type="vertical"/>
+          <MoreBtn key="more" item={record}/>
           {/*<Divider type="vertical"/>*/}
           {/*<a onClick={() => this.handleUpdateModalVisible(true, record)}>配置</a>*/}
           {/*<Divider type="vertical"/>*/}
@@ -162,7 +163,7 @@ class TableList extends Component<TableListProps, TableListState> {
   ];
 
   componentDidMount() {
-    const { dispatch } = this.props;
+    const {dispatch} = this.props;
     dispatch({
       type: 'articleTableList/fetch',
     });
@@ -174,11 +175,11 @@ class TableList extends Component<TableListProps, TableListState> {
     filtersArg: Record<keyof TableListItem, string[]>,
     sorter: SorterResult<TableListItem>,
   ) => {
-    const { dispatch } = this.props;
-    const { formValues } = this.state;
+    const {dispatch} = this.props;
+    const {formValues} = this.state;
 
     const filters = Object.keys(filtersArg).reduce((obj, key) => {
-      const newObj = { ...obj };
+      const newObj = {...obj};
       newObj[key] = getValue(filtersArg[key]);
       return newObj;
     }, {});
@@ -200,7 +201,7 @@ class TableList extends Component<TableListProps, TableListState> {
   };
 
   handleFormReset = () => {
-    const { form, dispatch } = this.props;
+    const {form, dispatch} = this.props;
     form.resetFields();
     this.setState({
       formValues: {},
@@ -212,15 +213,15 @@ class TableList extends Component<TableListProps, TableListState> {
   };
   //展开 收起搜索表单
   toggleForm = () => {
-    const { expandForm } = this.state;
+    const {expandForm} = this.state;
     this.setState({
       expandForm: !expandForm,
     });
   };
   //点击checkbox 出现的更多操作 中的操作
   handleMenuClick = (e: { key: string }) => {
-    const { dispatch } = this.props;
-    const { selectedRows } = this.state;
+    const {dispatch} = this.props;
+    const {selectedRows} = this.state;
 
     if (!selectedRows) return;
     switch (e.key) {
@@ -253,7 +254,7 @@ class TableList extends Component<TableListProps, TableListState> {
     console.log('handleSearch');
     e.preventDefault();
 
-    const { dispatch, form } = this.props;
+    const {dispatch, form} = this.props;
 
     form.validateFields((err, fieldsValue) => {
       if (err) return;
@@ -291,7 +292,7 @@ class TableList extends Component<TableListProps, TableListState> {
   //新建规则 然后点击确定事件
   handleAdd = (fields: { desc: any }) => {
     console.log('handleAdd');
-    const { dispatch } = this.props;
+    const {dispatch} = this.props;
     dispatch({
       type: 'articleTableList/add',
       payload: {
@@ -304,7 +305,7 @@ class TableList extends Component<TableListProps, TableListState> {
   };
   //规则配置最后一步完成操作
   handleUpdate = (fields: FormValsType) => {
-    const { dispatch } = this.props;
+    const {dispatch} = this.props;
     dispatch({
       type: 'articleTableList/update',
       payload: {
@@ -318,22 +319,46 @@ class TableList extends Component<TableListProps, TableListState> {
     this.handleUpdateModalVisible();
   };
 
+
+  batchDelete = () => {
+    const {selectedRows} = this.state;
+    const {dispatch} = this.props;
+    // console.log(selectedRows);
+    Modal.confirm({
+      title: '批量删除文章',
+      content: '确定批量删除所选文章吗？',
+      okText: '确认',
+      cancelText: '取消',
+      // onOk () {
+      //   console.log(123);
+      // }
+      onOk: () => {
+        const ids = selectedRows.map(row => row.id);
+        dispatch({
+          type: 'articleTableList/batchDelete',
+          payload: {ids}
+        });
+      }
+    });
+    console.log('Modal');
+  };
+
   // 查询表单收起时的样子
   renderSimpleForm() {
-    const { form } = this.props;
-    const { getFieldDecorator } = form;
+    const {form} = this.props;
+    const {getFieldDecorator} = form;
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
-        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
+        <Row gutter={{md: 8, lg: 24, xl: 48}}>
           <Col md={8} sm={24}>
             <FormItem label="规则名称">
-              {getFieldDecorator('name')(<Input placeholder="请输入" />)}
+              {getFieldDecorator('name')(<Input placeholder="请输入"/>)}
             </FormItem>
           </Col>
           <Col md={8} sm={24}>
             <FormItem label="使用状态">
               {getFieldDecorator('status')(
-                <Select placeholder="请选择" style={{ width: '100%' }}>
+                <Select placeholder="请选择" style={{width: '100%'}}>
                   <Option value="0">关闭</Option>
                   <Option value="1">运行中</Option>
                 </Select>,
@@ -345,11 +370,11 @@ class TableList extends Component<TableListProps, TableListState> {
               <Button type="primary" htmlType="submit">
                 查询
               </Button>
-              <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>
+              <Button style={{marginLeft: 8}} onClick={this.handleFormReset}>
                 重置
               </Button>
-              <a style={{ marginLeft: 8 }} onClick={this.toggleForm}>
-                展开 <Icon type="down" />
+              <a style={{marginLeft: 8}} onClick={this.toggleForm}>
+                展开 <Icon type="down"/>
               </a>
             </span>
           </Col>
@@ -361,20 +386,20 @@ class TableList extends Component<TableListProps, TableListState> {
   // 查询表单展开时的样子
   renderAdvancedForm() {
     const {
-      form: { getFieldDecorator },
+      form: {getFieldDecorator},
     } = this.props;
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
-        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
+        <Row gutter={{md: 8, lg: 24, xl: 48}}>
           <Col md={8} sm={24}>
             <FormItem label="规则名称">
-              {getFieldDecorator('name')(<Input placeholder="请输入" />)}
+              {getFieldDecorator('name')(<Input placeholder="请输入"/>)}
             </FormItem>
           </Col>
           <Col md={8} sm={24}>
             <FormItem label="使用状态">
               {getFieldDecorator('status')(
-                <Select placeholder="请选择" style={{ width: '100%' }}>
+                <Select placeholder="请选择" style={{width: '100%'}}>
                   <Option value="0">关闭</Option>
                   <Option value="1">运行中</Option>
                 </Select>,
@@ -383,22 +408,22 @@ class TableList extends Component<TableListProps, TableListState> {
           </Col>
           <Col md={8} sm={24}>
             <FormItem label="调用次数">
-              {getFieldDecorator('number')(<InputNumber style={{ width: '100%' }} />)}
+              {getFieldDecorator('number')(<InputNumber style={{width: '100%'}}/>)}
             </FormItem>
           </Col>
         </Row>
-        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
+        <Row gutter={{md: 8, lg: 24, xl: 48}}>
           <Col md={8} sm={24}>
             <FormItem label="更新日期">
               {getFieldDecorator('date')(
-                <DatePicker style={{ width: '100%' }} placeholder="请输入更新日期" />,
+                <DatePicker style={{width: '100%'}} placeholder="请输入更新日期"/>,
               )}
             </FormItem>
           </Col>
           <Col md={8} sm={24}>
             <FormItem label="使用状态">
               {getFieldDecorator('status3')(
-                <Select placeholder="请选择" style={{ width: '100%' }}>
+                <Select placeholder="请选择" style={{width: '100%'}}>
                   <Option value="0">关闭</Option>
                   <Option value="1">运行中</Option>
                 </Select>,
@@ -408,7 +433,7 @@ class TableList extends Component<TableListProps, TableListState> {
           <Col md={8} sm={24}>
             <FormItem label="使用状态">
               {getFieldDecorator('status4')(
-                <Select placeholder="请选择" style={{ width: '100%' }}>
+                <Select placeholder="请选择" style={{width: '100%'}}>
                   <Option value="0">关闭</Option>
                   <Option value="1">运行中</Option>
                 </Select>,
@@ -416,16 +441,16 @@ class TableList extends Component<TableListProps, TableListState> {
             </FormItem>
           </Col>
         </Row>
-        <div style={{ overflow: 'hidden' }}>
-          <div style={{ float: 'right', marginBottom: 24 }}>
+        <div style={{overflow: 'hidden'}}>
+          <div style={{float: 'right', marginBottom: 24}}>
             <Button type="primary" htmlType="submit">
               查询
             </Button>
-            <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>
+            <Button style={{marginLeft: 8}} onClick={this.handleFormReset}>
               重置
             </Button>
-            <a style={{ marginLeft: 8 }} onClick={this.toggleForm}>
-              收起 <Icon type="up" />
+            <a style={{marginLeft: 8}} onClick={this.toggleForm}>
+              收起 <Icon type="up"/>
             </a>
           </div>
         </div>
@@ -435,21 +460,21 @@ class TableList extends Component<TableListProps, TableListState> {
 
   //查询表单渲染 看是否折叠渲染不同的 表单
   renderForm() {
-    const { expandForm } = this.state;
+    const {expandForm} = this.state;
     return expandForm ? this.renderAdvancedForm() : this.renderSimpleForm();
   }
 
   render() {
     const {
-      articleTableList: { data }, //从articleTableList解构data
+      articleTableList: {data}, //从articleTableList解构data
       loading,
     } = this.props;
 
-    const { selectedRows, modalVisible, updateModalVisible, stepFormValues } = this.state;
+    const {selectedRows, modalVisible, updateModalVisible, stepFormValues} = this.state;
     const menu = (
       <Menu onClick={this.handleMenuClick} selectedKeys={[]}>
-        <Menu.Item key="remove">删除</Menu.Item>
-        <Menu.Item key="approval">批量审批</Menu.Item>
+        <Menu.Item key="remove"><Button type="dashed" block>批量禁用</Button></Menu.Item>
+        <Menu.Item key="approval"><Button type="dashed" block>批量启用</Button></Menu.Item>
       </Menu>
     );
 
@@ -467,15 +492,15 @@ class TableList extends Component<TableListProps, TableListState> {
           <div className={styles.tableList}>
             <div className={styles.tableListForm}>{this.renderForm()}</div>
             <div className={styles.tableListOperator}>
-              <Button icon="plus" type="primary" onClick={() => this.handleModalVisible(true)}>
-                新建
-              </Button>
+              {/*<Button icon="plus" type="primary" onClick={() => this.handleModalVisible(true)}>*/}
+              {/*  新建*/}
+              {/*</Button>*/}
               {selectedRows.length > 0 && (
                 <span>
-                  <Button>批量操作</Button>
+                  <Button type="primary" onClick={this.batchDelete}>批量删除</Button>
                   <Dropdown overlay={menu}>
                     <Button>
-                      更多操作 <Icon type="down" />
+                      更多操作 <Icon type="down"/>
                     </Button>
                   </Dropdown>
                 </span>
@@ -493,7 +518,7 @@ class TableList extends Component<TableListProps, TableListState> {
           </div>
         </Card>
         {/*新建规则模态框*/}
-        <CreateForm {...parentMethods} modalVisible={modalVisible} />
+        <CreateForm {...parentMethods} modalVisible={modalVisible}/>
         <UpdateForm // 规则配置模态框
           {...updateMethods}
           updateModalVisible={updateModalVisible}

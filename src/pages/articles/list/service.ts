@@ -1,5 +1,5 @@
 import request from '@/utils/request';
-import { TableListParams } from './data.d';
+import {TableListParams} from './data.d';
 
 export async function queryRule(params: TableListParams) {
   return request('/articles/lists', {
@@ -33,6 +33,15 @@ export async function updateRule(params: TableListParams) {
     data: {
       ...params,
       method: 'update',
+    },
+  });
+}
+
+export async function batchDelete(params: string[]) {
+  return request('/articles/batch-del', {
+    method: 'delete',
+    data: {
+      ...params
     },
   });
 }

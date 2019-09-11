@@ -1,8 +1,9 @@
-import { AnyAction, Reducer } from 'redux';
-import { EffectsCommandMap } from 'dva';
-import { addRule, queryRule, removeRule, updateRule } from './service';
+import {AnyAction, Reducer} from 'redux';
+import {EffectsCommandMap} from 'dva';
+import {addRule, queryRule, removeRule, updateRule, batchDelete} from './service';
 
-import { TableListData } from './data.d';
+import {TableListData} from './data.d';
+import {message} from "antd";
 
 export interface StateType {
   data: TableListData;
@@ -21,6 +22,7 @@ export interface ModelType {
     add: Effect;
     remove: Effect;
     update: Effect;
+    batchDelete: Effect
   };
   reducers: {
     save: Reducer<StateType>;
@@ -38,14 +40,14 @@ const Model: ModelType = {
   },
 
   effects: {
-    *fetch({ payload }, { call, put }) {
+    * fetch({payload}, {call, put}) {
       const response = yield call(queryRule, payload);
       yield put({
         type: 'save',
         payload: response,
       });
     },
-    *add({ payload, callback }, { call, put }) {
+    * add({payload, callback}, {call, put}) {
       const response = yield call(addRule, payload);
       yield put({
         type: 'save',
@@ -53,7 +55,7 @@ const Model: ModelType = {
       });
       if (callback) callback();
     },
-    *remove({ payload, callback }, { call, put }) {
+    * remove({payload, callback}, {call, put}) {
       const response = yield call(removeRule, payload);
       yield put({
         type: 'save',
@@ -61,7 +63,7 @@ const Model: ModelType = {
       });
       if (callback) callback();
     },
-    *update({ payload, callback }, { call, put }) {
+    * update({payload, callback}, {call, put}) {
       const response = yield call(updateRule, payload);
       yield put({
         type: 'save',
@@ -69,6 +71,16 @@ const Model: ModelType = {
       });
       if (callback) callback();
     },
+    * batchDelete({payload, callback}, {call, put}) {
+
+      const response = yield call(batchDelete, payload);
+      response.status === 'ok' ? message.info(response.message) : message.error(response.message);
+      //@ts-ignore https://umijs.org/zh/guide/with-dva.html#faq
+      window.g_app._store.dispatch({
+        type: 'articleTableList/fetch'
+      });
+      // if (callback) callback();
+    }
   },
 
   reducers: {
