@@ -13,7 +13,6 @@ import {
   Menu,
   Row,
   Select,
-  message,
   Modal
 } from 'antd';
 import React, {Component, Fragment} from 'react';
@@ -25,9 +24,7 @@ import {SorterResult} from 'antd/es/table';
 import {connect} from 'dva';
 import moment from 'moment';
 import {StateType} from './model';
-import CreateForm from './components/CreateForm';
 import StandardTable, {StandardTableColumnProps} from './components/StandardTable';
-import UpdateForm, {FormValsType} from './components/UpdateForm';
 import {TableListItem, TableListPagination, TableListParams} from './data.d';
 import MoreBtn from './components/MoreBtn';
 
@@ -153,10 +150,6 @@ class TableList extends Component<TableListProps, TableListState> {
           <a href="">编辑</a>
           <Divider type="vertical"/>
           <MoreBtn key="more" item={record}/>
-          {/*<Divider type="vertical"/>*/}
-          {/*<a onClick={() => this.handleUpdateModalVisible(true, record)}>配置</a>*/}
-          {/*<Divider type="vertical"/>*/}
-          {/*<a href="">订阅警报</a>*/}
         </Fragment>
       ),
     },
@@ -199,7 +192,7 @@ class TableList extends Component<TableListProps, TableListState> {
       payload: params,
     });
   };
-
+  //表单重置
   handleFormReset = () => {
     const {form, dispatch} = this.props;
     form.resetFields();
@@ -274,52 +267,7 @@ class TableList extends Component<TableListProps, TableListState> {
       });
     });
   };
-  //设置规则模态框隐藏展示
-  handleModalVisible = (flag?: boolean) => {
-    this.setState({
-      modalVisible: !!flag,
-    });
-  };
-  //规则配置模态框
-  handleUpdateModalVisible = (flag?: boolean, record?: FormValsType) => {
-    console.log('record');
-    console.log(record);
-    this.setState({
-      updateModalVisible: !!flag,
-      stepFormValues: record || {},
-    });
-  };
-  //新建规则 然后点击确定事件
-  handleAdd = (fields: { desc: any }) => {
-    console.log('handleAdd');
-    const {dispatch} = this.props;
-    dispatch({
-      type: 'articleTableList/add',
-      payload: {
-        desc: fields.desc,
-      },
-    });
-
-    message.success('添加成功');
-    this.handleModalVisible();
-  };
-  //规则配置最后一步完成操作
-  handleUpdate = (fields: FormValsType) => {
-    const {dispatch} = this.props;
-    dispatch({
-      type: 'articleTableList/update',
-      payload: {
-        name: fields.name,
-        desc: fields.desc,
-        key: fields.key,
-      },
-    });
-
-    message.success('配置成功');
-    this.handleUpdateModalVisible();
-  };
-
-
+  //批量删除
   batchDelete = () => {
     const {selectedRows} = this.state;
     const {dispatch} = this.props;
@@ -329,9 +277,6 @@ class TableList extends Component<TableListProps, TableListState> {
       content: '确定批量删除所选文章吗？',
       okText: '确认',
       cancelText: '取消',
-      // onOk () {
-      //   console.log(123);
-      // }
       onOk: () => {
         const ids = selectedRows.map(row => row.id);
         dispatch({
@@ -470,31 +415,20 @@ class TableList extends Component<TableListProps, TableListState> {
       loading,
     } = this.props;
 
-    const {selectedRows, modalVisible, updateModalVisible, stepFormValues} = this.state;
+    const {selectedRows} = this.state;
     const menu = (
       <Menu onClick={this.handleMenuClick} selectedKeys={[]}>
         <Menu.Item key="remove"><Button type="dashed" block>批量禁用</Button></Menu.Item>
         <Menu.Item key="approval"><Button type="dashed" block>批量启用</Button></Menu.Item>
       </Menu>
     );
-
-    const parentMethods = {
-      handleAdd: this.handleAdd,
-      handleModalVisible: this.handleModalVisible,
-    };
-    const updateMethods = {
-      handleUpdateModalVisible: this.handleUpdateModalVisible,
-      handleUpdate: this.handleUpdate,
-    };
     return (
       <PageHeaderWrapper title={false}>
         <Card bordered={false}>
           <div className={styles.tableList}>
             <div className={styles.tableListForm}>{this.renderForm()}</div>
             <div className={styles.tableListOperator}>
-              {/*<Button icon="plus" type="primary" onClick={() => this.handleModalVisible(true)}>*/}
-              {/*  新建*/}
-              {/*</Button>*/}
+
               {selectedRows.length > 0 && (
                 <span>
                   <Button type="primary" onClick={this.batchDelete}>批量删除</Button>
@@ -517,13 +451,7 @@ class TableList extends Component<TableListProps, TableListState> {
             />
           </div>
         </Card>
-        {/*新建规则模态框*/}
-        <CreateForm {...parentMethods} modalVisible={modalVisible}/>
-        <UpdateForm // 规则配置模态框
-          {...updateMethods}
-          updateModalVisible={updateModalVisible}
-          values={stepFormValues}
-        />
+
       </PageHeaderWrapper>
     );
   }
